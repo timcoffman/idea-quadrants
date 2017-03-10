@@ -1,0 +1,259 @@
+/* styles */
+/* called by your view template */
+
+/* You might want to try something fancier: */
+/* less: http://lesscss.org/ */
+
+body {
+  font-family: 'gill sans', sans-serif ;
+  font-size: 14pt ;
+  margin: 0 ;
+  padding: 0 ;
+}
+
+header {
+  background-color: light-gray ;
+  margin: 0 ;
+  padding: 0 ;
+}
+
+header .login {
+  float: right ;
+  margin: 3px 15px ;
+}
+
+.ui-widget {
+  font-size: 0.8em ;
+}
+
+.ui-button {
+  padding: 0.2em 0.6em ;
+}
+
+.tabs {
+  margin: 0 ;
+  padding: 6px ;
+  color: black ;
+}
+
+.tabs > a {
+  padding: 0 12px ;
+}
+
+a {
+  border-radius: 9px;
+  padding: 0 4px ;
+}
+
+a:link,
+a:active,
+a:hover,
+a:visited {
+  color: black ;
+  text-decoration: none ;
+}
+
+a:hover {
+  background-color: rgba(0,0,0,0.3) ;
+  color: white ;
+}
+
+.tabs.category {
+  font-size: 20pt ;
+  background: lightsteelblue ;
+  color: black ;
+}
+
+.tabs.object {
+  font-size: 14pt ;
+  background: lightseagreen ;
+}
+
+img {
+  height: 1.25em ;
+  vertical-align: text-bottom ;
+}
+
+.field {
+  display: inline-block ;
+  padding: 0px 0.25em;
+  border: solid 1px rgba(0,0,0,0.5) ;
+  border-radius: 6px ;
+}
+
+.editable {
+  /*
+  background-color: rgba(0,0,255,0.05) ;
+  */
+  cursor: pointer ;
+}
+
+.main {
+  font-size: 12pt ;
+  margin: 1em ;
+}
+
+.main h1 {
+  width: 100% ;
+}
+
+.panels {
+  width: 100% ;
+  padding: 0 ;
+  margin: 0 ;
+  display: flex;
+  flex-direction: row ;
+}
+
+.panels > .panels {
+  flex-direction: column ;
+}
+
+.panels > .panels > .panels {
+  flex-direction: row ;
+}
+
+
+.panels > * {
+  flex: 0 1 auto ;
+  padding: 0.25em ;
+}
+
+.box {
+  margin: 1em ;
+  padding: 0 ;
+  border: solid 3px darkslateblue ;
+  border-radius: 10px ;
+  box-shadow: 3px 3px rgba(0,0,0,0.2);
+  text-align: center ;
+}
+
+
+.box h1,
+.box h2,
+.box h3 {
+  width: 100% ;
+  padding: 0 ;
+  margin: 0 0 0.5em 0 ;
+  background: darkslateblue ;
+  color: white ;
+}
+
+
+.box h1 {
+  font-size: 1.2em ;
+}
+
+
+.box h2,
+.box h3 {
+  font-size: 1em ;
+}
+
+.box > h1 > a,
+.box > h2 > a,
+.box > h3 > a {
+  display: block ;
+  padding: 0.25em 0.5em ;
+  color: white ;
+}
+
+.box .contents {
+  margin: 0.125em ;
+  padding: 0.125em ;
+}
+
+.browser .member {
+  opacity: 0.3 ;
+  cursor: not-allowed ;
+}
+
+.browser .non-member {
+  cursor: copy ;
+}
+
+
+
+.feedback-grid {
+  display: flex ;
+  flex-flow: column nowrap;
+}
+
+.feedback-row {
+  display: flex ;
+  flex-flow: row nowrap ;
+  border: solid 1px transparent ;
+}
+
+.feedback-row {
+  flex: 1 1 content ;
+}
+
+.feedback-cell {
+  
+}
+
+.feedback-row.heading-row .feedback-cell{
+/*   color: darkseagreen ; */
+/*   font-weight: bold ; */
+}
+
+.feedback-grid .feedback-cell {
+  text-align: center ;
+}
+
+.feedback-row.data-row .feedback-cell.heading-cell {
+  text-align: right ;
+}
+
+.feedback-row.data-row:nth-child(odd) {
+  background: rgba(0,0,0,0.05) ;
+}
+
+.feedback-cell {
+  flex: 1 0 50px ;
+}
+
+.feedback-cell.heading-cell {
+/*   color: darkseagreen ; */
+/*   font-weight: bold ; */
+}
+
+.feedback-cell.data-cell:nth-child(odd) {
+  background: rgba(0,0,0,0.05) ;
+}
+
+.feedback-row .feedback-cell:first-child {
+  flex-grow: 5 ;
+}
+
+.feedback-row.data-row:hover {
+  background: rgba(0,0,0,0.1) ;
+}
+
+
+.feedback-grid .feedback-cell.data-cell .contents {
+  margin: 3px 14px ;
+}
+
+.main {
+  position: relative ;
+}
+
+.zoom-control {
+  position: absolute ;
+  right: 0 ;
+  top: 0 ;
+  width: auto ;
+  height: auto ;
+  padding: 3px 10px ;
+  margin: 5px 15px ;
+  border: solid 3px darkseagreen ;
+  border-radius: 6px ;
+  background: lightgray ;
+  box-shadow: 3px 3px rgba(0,0,0,0.05) ;
+}
+
+.zoom-control img {
+  height: 18px ;
+}

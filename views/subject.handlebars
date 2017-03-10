@@ -1,0 +1,20 @@
+<script type="text/javascript">$(document).ready(function() {
+   $('.subject .name.editable').editable('{{id}}', { submitdata: { field:'name' }, name: 'value' } );
+   $('.subject .description.editable').editable('{{id}}', { submitdata: { field:'description' }, name: 'value' } );
+});</script>
+
+<h1 class="subject">Subject <span class="field name editable">{{subject.name}}</span> (#{{subject.id}})</h1>
+
+<div class="panels subject">
+
+<div class="box">
+  <h2>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+  Details
+  </h2>
+  <div>
+    <div class="field description editable">{{subject.description}}</div>
+  </div>
+</div>
+
+</div>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"
+  viewBox="0,0 400,400"
+  preserveAspectRatio="xMinYMin meet"
+  >
+  
+  <defs>
+    <linearGradient id="backgroundGradient" gradientTransform="rotate(45,0.5,0.5)">
+      <stop offset="  0%" stop-color="#FFDDDD"/>
+      <stop offset=" 50%"   stop-color="#FFFFFF"/>
+      <stop offset="100%"   stop-color="#DDFFDD"/>
+    </linearGradient>
+  </defs>
+  
+  <g font-family="Calibri, Verdana, Arial">
+    <g transform="translate(55,345) scale(34.0,-34.0)" style="fill:none; stroke: black; stroke-width:0.02;">
+      <rect x="0" y="0" rx="0.2" ry="0.2" width="10" height="10" style="stroke-width:0.1;" fill="white"/>
+      
+      <line x1="0" y1="1" x2="10" y2="1" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="0" y1="2" x2="10" y2="2" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="0" y1="3" x2="10" y2="3" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="0" y1="4" x2="10" y2="4" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="0" y1="5" x2="10" y2="5" style="stroke-width:0.1;"/>
+      <line x1="0" y1="6" x2="10" y2="6" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="0" y1="7" x2="10" y2="7" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="0" y1="8" x2="10" y2="8" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="0" y1="9" x2="10" y2="9" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+
+      <line x1="1" y1="0" x2="1" y2="10" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="2" y1="0" x2="2" y2="10" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="3" y1="0" x2="3" y2="10" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="4" y1="0" x2="4" y2="10" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="5" y1="0" x2="5" y2="10" style="stroke-width:0.1;"/>
+      <line x1="6" y1="0" x2="6" y2="10" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="7" y1="0" x2="7" y2="10" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="8" y1="0" x2="8" y2="10" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+      <line x1="9" y1="0" x2="9" y2="10" style="opacity:0.3" stroke-dasharray="0.1,0.8,0.1,0"/>
+
+      <g id="point-group" font-size="12" transform="translate(-0.5,-0.5)">
+        <!--
+        <circle cx="10" cy="10" r="0.5" style="stroke: black; fill: red;"/>
+        <circle cx="9" cy="10" r="0.5" style="stroke: black; fill: blue;"/>
+        -->
+      </g>
+    </g>
+
+    <!--
+    <line x1="50" y1="0" x2="50" y2="400" style="stroke: red; stroke-width: 2;"/>
+    <line x1="0" y1="350" x2="400" y2="350" style="stroke: green; stroke-width: 2;"/>
+    -->
+    <g>
+      <g transform="translate(50,350)">
+        <text id="label-x-min"  x="5"  y="15" text-anchor="start"  font-size="16">X-Axis Minimum</text>
+        <text id="label-x-main" x="175" y="45" text-anchor="middle" font-size="24">X-Axis Label</text>
+        <text id="label-x-max"  x="345" y="15" text-anchor="end"    font-size="16">X-Axis Maximum</text>
+      </g>
+      <g transform="rotate(270,200,200) translate(50,0)">
+        <text id="label-y-min"  x="5"  y="45" text-anchor="start"  font-size="16">Y-Axis Minimum</text>
+        <text id="label-y-main" x="175" y="25" text-anchor="middle" font-size="24">Y-Axis Label</text>
+        <text id="label-y-max"  x="345" y="45" text-anchor="end"    font-size="16">Y-Axis Maximum</text>
+      </g>
+    </g>
+  </g>
+</svg>

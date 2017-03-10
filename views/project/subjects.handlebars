@@ -1,0 +1,94 @@
+<script type="text/javascript">$(document).ready(function() {
+   $('.project .name.editable').editable('/project/{{project.id}}', { submitdata: { field:'name' }, name: 'value' } );
+});</script>
+
+<h1 class="project" title="Project Id: #{{project.id}}">
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+  <span class="field name editable">{{project.name}}</span>
+</h1>
+
+<div class="panels">
+
+<div class="project">
+  
+  <div class="box">
+  <h2>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+    Subjects
+  </h2>
+  <div class="subjects">
+  {{#each project.subjects }}
+  <div class="subject" data-id="{{id}}">
+    <span class="name">{{name}}</span>
+  </div>
+  {{/each}}
+  </div>
+  </div>
+
+
+</div>
+
+<div class="browser">
+
+  <div class="box">
+  <h2>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+    Available Subjects
+  </h2>
+  <div class="subjects">    
+  </div>
+  </div>
+
+</div>
+
+
+</div>
+
+<script id="subject-template" type="text/x-handlebars-template">
+  <div class="subject" data-id="\{{id}}"><span class="name">\{{name}}</span></div>
+</script>
+
+<script type="text/javascript">$(document).ready(function() {
+  var subjectTemplate = Handlebars.compile( $("#subject-template").html() ) ;
+
+  function projectSubject( subjectId ) {
+    return $('.project .subjects .subject[data-id="' + subjectId + '"]') ;
+  }
+  function browserSubject( subjectId ) {
+    return $('.browser .subjects .subject[data-id="' + subjectId + '"]') ;
+  }
+  
+  $('.project .subjects').on( 'click', '.subject', function(evt) {
+    var subjectId = evt.currentTarget.getAttribute('data-id') ;
+    $.ajax('/project/{{project.id}}/subject/' + subjectId, { type: 'DELETE', dataType: 'json', data: {} } )
+      .done( function(data,status) {
+        $(evt.currentTarget).remove() ;
+        browserSubject(subjectId).removeClass('member').addClass('non-member') ;
+      }) ;
+    
+  }) ;
+
+  $('.browser .subjects').on( 'click', '.subject', function(evt) {
+    var subjectId = evt.currentTarget.getAttribute('data-id') ;
+    $.ajax('/project/{{project.id}}/subject/' + subjectId, { type: 'PUT', dataType: 'json', data: {} } )
+      .done( function(subject,status) {
+         $( subjectTemplate(subject) )
+         .appendTo( $( '.project .subjects' ) )
+         ;
+         browserSubject(subjectId).removeClass('non-member').addClass('member') ;
+      }) ;
+  }) ;
+
+  $.getJSON('/subject/')
+     .done( function(data,status) {
+     
+       for ( var i in data )
+         $( subjectTemplate(data[i]) )
+         .appendTo( $( '.browser .subjects' ) )
+         .addClass( projectSubject(data[i].id).length ? 'member' : 'non-member' )
+         ;
+
+      })
+    ;
+});</script>
+

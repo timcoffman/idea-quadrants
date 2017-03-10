@@ -1,0 +1,46 @@
+<script type="text/javascript">$(document).ready(function() {
+   $('.rating .name.editable').editable('{{id}}', { submitdata: { field:'name' }, name: 'value' } );
+   $('.rating .min-label.editable').editable('{{id}}', { submitdata: { field:'minLabel' }, name: 'value' } );
+   $('.rating .max-label.editable').editable('{{id}}', { submitdata: { field:'maxLabel' }, name: 'value' } );
+   
+   $('.rating .plot-axis-direction')
+     .val( '{{rating.plotAxisDirection}}' )
+     .selectmenu()
+     .on('selectmenuchange', function(evt) {
+       var plotAxisDirection = evt.currentTarget.value ;
+       $.ajax('/rating/{{rating.id}}', { type: 'POST', dataType: 'json', data: { field: 'plotAxisDirection', value: plotAxisDirection } } ) 
+         .done( function(value,status) {
+            $(element).text( value );
+          }) ;
+       }) 
+       ;
+});</script>
+
+<h1 class="rating">Rating <span class="field name editable">{{rating.name}}</span> (#{{rating.id}})</h1>
+
+<div class="panels rating">
+
+<div class="box">
+  <h2>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+  Details
+  </h2>
+  <div>
+    Rates items on a scale of 1 to 10, where 1 is
+    "<span class="field min-label editable">{{rating.minLabel}}</span>"
+    and 10 is
+    "<span class="field max-label editable">{{rating.maxLabel}}</span>"
+
+  </div>
+  <div>
+    <label>When plotting, axis should be displayed
+      <select class="field plot-axis-direction">
+        <option value="lowToHigh">from 1 up to 10</option>
+        <option value="highToLow">from 10 down to 1</option>
+      </select>
+
+    </label>
+  </div>
+</div>
+
+</div>

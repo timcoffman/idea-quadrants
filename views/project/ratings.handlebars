@@ -1,0 +1,96 @@
+<script type="text/javascript">$(document).ready(function() {
+   $('.project .name.editable').editable('/project/{{project.id}}', { submitdata: { field:'name' }, name: 'value' } );
+});</script>
+
+<h1 class="project" title="Project Id: #{{project.id}}">
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+  <span class="field name editable">{{project.name}}</span>
+</h1>
+
+<div class="panels">
+
+<div class="project">
+  
+  <div class="box">
+  <h2>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+    Ratings
+  </h2>
+  <div class="ratings">
+  {{#each project.ratings }}
+  <div class="rating" data-id="{{id}}">
+    <span class="name">{{name}}</span>
+  </div>
+  {{/each}}
+  </div>
+  </div>
+
+
+</div>
+
+<div class="browser">
+
+  <div class="box">
+  <h2>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+    Available Ratings
+  </h2>
+  <div class="ratings">    
+  </div>
+  </div>
+
+</div>
+
+
+</div>
+
+<script id="rating-template" type="text/x-handlebars-template">
+  <div class="rating" data-id="\{{id}}"><span class="name">\{{name}}</span></div>
+</script>
+
+<script type="text/javascript">$(document).ready(function() {
+  var ratingTemplate = Handlebars.compile( $("#rating-template").html() ) ;
+  
+  function projectRating( ratingId ) {
+    return $('.project .ratings .rating[data-id="' + ratingId + '"]') ;
+  }
+  function browserRating( ratingId ) {
+    return $('.browser .ratings .rating[data-id="' + ratingId + '"]') ;
+  }
+  
+  $('.project .ratings').on( 'click', '.rating', function(evt) {
+    var ratingId = evt.currentTarget.getAttribute('data-id') ;
+    $.ajax('/project/{{project.id}}/rating/' + ratingId, { type: 'DELETE', dataType: 'json', data: {} } )
+      .done( function(data,status) {
+        $(evt.currentTarget).remove() ;
+        browserRating(ratingId).removeClass('member').addClass('non-member') ;
+      }) ;
+    
+  }) ;
+
+
+  $('.browser .ratings').on( 'click', '.rating', function(evt) {
+    var ratingId = evt.currentTarget.getAttribute('data-id') ;
+    $.ajax('/project/{{project.id}}/rating/' + ratingId, { type: 'PUT', dataType: 'json', data: {} } )
+      .done( function(rating,status) {
+         $( ratingTemplate(rating) )
+         .appendTo( $( '.project .ratings' ) )
+         ;
+         browserRating(ratingId).removeClass('non-member').addClass('member') ;
+      }) ;
+    
+  }) ;
+
+  $.getJSON('/rating/')
+     .done( function(data,status) {
+     
+       for ( var i in data )
+         $( ratingTemplate(data[i]) )
+         .appendTo( $( '.browser .ratings' ) )
+         .addClass( projectRating(data[i].id).length ? 'member' : 'non-member' )
+         ;
+         
+      })
+    ;
+});</script>
+

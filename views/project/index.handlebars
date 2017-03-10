@@ -1,0 +1,41 @@
+<h1>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+  Projects
+</h1>
+
+<div class="panels">
+
+
+<div class="panels">
+
+{{#each projects }}
+<a href="/project/{{id}}">
+<div class="box">
+  <h1>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+    {{name}}
+  </h1>
+  <div>{{description}}</div>
+</div>
+</a>
+{{/each}}
+
+</div>
+
+
+<div class="panels">
+
+<div class="box">
+  <h1>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+    New Project
+  </h1>
+  
+  <form method="POST" action="/project/?_method=PUT">
+    <button type="submit">Start New Project</button>
+  </form>
+</div>
+
+</div>
+
+</div>

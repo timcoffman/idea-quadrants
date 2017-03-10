@@ -1,0 +1,95 @@
+<script type="text/javascript">$(document).ready(function() {
+   $('.project .name.editable').editable('/project/{{project.id}}', { submitdata: { field:'name' }, name: 'value' } );
+});</script>
+
+<h1 class="project" title="Project Id: #{{project.id}}">
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+  <span class="field name editable">{{project.name}}</span>
+</h1>
+
+<div class="panels">
+
+<div class="project">
+  
+  <div class="box">
+  <h2>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+    Participants
+  </h2>
+  <div class="participants">
+  {{#each project.participants }}
+  <div class="user" data-id="{{id}}">
+    <span class="name">{{displayName}}</span>
+  </div>
+  {{/each}}
+  </div>
+  </div>
+
+
+</div>
+
+<div class="browser">
+
+  <div class="box">
+  <h2>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+    Available Users
+  </h2>
+  <div class="users">    
+  </div>
+  </div>
+
+</div>
+
+
+</div>
+
+<script id="user-template" type="text/x-handlebars-template">
+  <div class="user" data-id="\{{id}}"><span class="name">\{{displayName}}</span></div>
+</script>
+
+<script type="text/javascript">$(document).ready(function() {
+  var userTemplate = Handlebars.compile( $("#user-template").html() ) ;
+  
+  function projectParticipant( participantId ) {
+    return $('.project .participants .user[data-id="' + participantId + '"]') ;
+  }
+  function browserUser( userId ) {
+    return $('.browser .users .user[data-id="' + userId + '"]') ;
+  }
+
+  $('.project .participants').on( 'click', '.user', function(evt) {
+    var participantId = evt.currentTarget.getAttribute('data-id') ;
+    $.ajax('/project/{{project.id}}/participant/' + participantId, { type: 'DELETE', dataType: 'json', data: {} } )
+      .done( function(data,status) {
+        $(evt.currentTarget).remove() ;
+        browserUser(participantId).removeClass('member').addClass('non-member') ;
+      }) ;
+    
+  }) ;
+
+  $('.browser .users').on( 'click', '.user', function(evt) {
+    var participantId = evt.currentTarget.getAttribute('data-id') ;
+    $.ajax('/project/{{project.id}}/participant/' + participantId, { type: 'PUT', dataType: 'json', data: {} } )
+      .done( function(participant,status) {
+        $( userTemplate(participant) )
+         .appendTo( $( '.project .participants' ) )
+         ;
+         browserUser(participantId).removeClass('non-member').addClass('member') ;
+      }) ;
+    
+  }) ;
+
+  $.getJSON('/user/')
+     .done( function(data,status) {
+     
+       for ( var i in data )
+         $( userTemplate(data[i]) )
+         .appendTo( $( '.browser .users' ) )
+         .addClass( projectParticipant(data[i].id).length ? 'member' : 'non-member' )
+         ;
+
+      })
+    ;
+});</script>
+

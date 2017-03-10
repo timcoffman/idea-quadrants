@@ -1,0 +1,45 @@
+<h1>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+  Ratings
+</h1>
+
+<div class="panels">
+
+
+<div class="panels">
+
+
+{{#each ratings }}
+<a href="/rating/{{id}}">
+  <div class="box">
+    <h1>
+      <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+      {{name}}
+    </h1>
+    <div>
+      <div>Rates subjects from "{{minLabel}}" to "{{maxLabel}}"</div>
+      <div>Plot Axis Direction: {{plotAxisDirection}}</div>
+    </div>
+  </div>
+</a>
+{{/each}}
+
+</div>
+
+
+<div class="panels">
+
+<div class="box">
+  <h1>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+    New Rating
+  </h1>
+  <form method="POST" action="/rating/?_method=PUT">
+    <button type="submit">Add New Rating</button>
+  </form>
+</div>
+
+
+</div>
+
+</div>

@@ -1,0 +1,156 @@
+<script type="text/javascript">$(document).ready(function() {
+   $('.project .name.editable').editable('/project/{{id}}', { submitdata: { field:'name' }, name: 'value' } );
+});</script>
+
+<script type="text/javascript">$(document).ready(function() {
+    function sendAnswer( target, value, commit ) {
+      var element = $(target).closest('.answer') ;
+      var subjectId     = element.attr("data-subject-id") ;
+      var ratingId      = element.attr("data-rating-id") ;
+      var participantId = element.attr("data-participant-id") ;
+      var urlBase ;
+      if ( participantId )
+        urlBase = '/project/{{project.id}}/participant/' + participantId ;
+      else
+        urlBase = '/project/{{project.id}}' ;
+      return $.ajax(urlBase + '/answer/' + subjectId + '/' + ratingId + '?commit=' + commit, { type: 'PUT', dataType: 'json', data: { value: value } } )
+        .done( function(value,status) {
+          $('.editable',element).text(value) ;
+          if ( $.isNumeric(value) ) {
+            $('.slider',element).slider('value',value) ;
+          } else {
+            $('.slider .ui-slider-handle',element).hide();
+          }
+        })
+        ;
+    }
+
+   $('.answer .editable').editable( function(value, settings) {
+     sendAnswer( this, value ) ;
+   }, { tooltip: 'click/tap to update', placeholder: 'no answer' } );
+
+   $('.answer .slider').slider( {
+     min: 1,
+     max: 10,
+     step: 1,
+     slide: function(evt, ui) { sendAnswer( evt.target, ui.value, false ) ; },
+     stop: function(evt, ui) { sendAnswer( evt.target, ui.value, true ) ; },
+     change: function(evt,ui) { $('.ui-slider-handle',evt.target).show() ; }
+    } ) ;
+    
+    $('.answer').each( function(i,element) {
+      var value = $('.editable',element).text() ;
+      if ( $.isNumeric(value) ) {
+        $('.slider',element).slider('value',value) ;
+      } else {
+        $('.slider .ui-slider-handle',element).hide();
+      }
+    }) ;
+});</script>
+
+<h1 class="project" title="Project Id: #{{project.id}}">
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+  <span class="field name editable">{{project.name}}</span>
+</h1>
+
+<h2>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487636790_thermometer.png">
+  Feedback
+  &#8227;
+  {{#if participant}}
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+    {{participant.displayName}}
+  {{else}}
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+    Overall
+  {{/if}}
+</h2>
+
+<div class="feedback-grid">
+
+  <div class="feedback-row heading-row">
+  
+    <div class="feedback-cell heading-cell">
+      <!-- empty corner -->
+    </div>
+    
+    {{#each project.ratings as |rating|}}
+    <div class="feedback-cell heading-cell">
+      <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+      <span class="name">{{rating.name}}</span>
+    </div>
+    {{/each}}
+  </div>
+
+  {{#each project.subjects as |subject|}}
+  <div class="feedback-row data-row">
+  
+    <div class="feedback-cell heading-cell">
+      <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+      <span class="name">{{subject.name}}</span>
+    </div>
+    
+    {{#each ../project.ratings as |rating|}}
+    <div class="feedback-cell data-cell">
+      <div class="contents">
+        {{#unless ../../participant}}
+        <div class="answer" data-subject-id="{{subject.id}}" data-rating-id="{{rating.id}}">
+          <div class="editable">{{lookup (lookup (lookup ../../answers subject.id) rating.id) '_'}}</div>
+          <div class="slider"></div>
+        </div>
+        <hr/>
+        {{/unless}}
+        {{#each ../../participants as |participant|}}
+          <div class="answer" data-subject-id="{{subject.id}}" data-rating-id="{{rating.id}}" data-participant-id="{{participant.id}}">
+            <div class="editable">{{lookup (lookup (lookup ../../../answers subject.id) rating.id) participant.id}}</div>
+            <div class="slider"></div>
+          </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/each}}
+
+    
+  </div>
+  {{/each}}
+
+</div>
+
+<script type="text/javascript">$(document).ready(function() {
+   var cxn = new WebSocket('wss://' + location.hostname + location.pathname ) ;
+   cxn.onopen = function () {
+     /* socket open */ ;
+   } ;
+   cxn.onerror = function (err) {
+     console.log("websocket error: " + error) ;
+   } ;
+   cxn.onmessage = function (evt) {
+     var message = JSON.parse( evt.data );
+     
+     if ( message.type == 'update' ) {
+       var projectId     = message.key.projectId ;
+       var subjectId     = message.key.subjectId ;
+       var ratingId      = message.key.ratingId ;
+       var participantId = message.key.participantId ;
+       if ( !( projectId && subjectId && ratingId ) )
+         return ;
+       if ( projectId != '{{project.id}}' )
+         return ;
+        // check for suspended updated
+
+        var element ;
+        if ( participantId && participantId != '_' )
+          element = $('.answer[data-subject-id="' + subjectId + '"][data-rating-id="' + ratingId + '"][data-participant-id="' + participantId + '"]') ;
+        else
+          element = $('.answer[data-subject-id="' + subjectId + '"][data-rating-id="' + ratingId + '"]:not([data-participant-id])') ;
+        var value = message.value ;
+        $('.editable',element).text(value) ;
+        if ( $.isNumeric(value) ) {
+          $('.slider',element).slider('value',value) ;
+        } else {
+          $('.slider .ui-slider-handle',element).hide();
+        }
+
+     }
+   } ;
+});</script>

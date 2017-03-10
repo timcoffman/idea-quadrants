@@ -1,0 +1,74 @@
+<div class="panels">
+
+<div class="panels">
+
+<div class="box">
+  <h1>Google+</h1>
+
+  <div id="signinButton">
+      <span class="g-signin"
+        data-scope="https://www.googleapis.com/auth/plus.login"
+        data-clientid="{{clientId 'GOOGLE_PLUS'}}"
+        data-redirecturi="postmessage"
+        data-accesstype="offline"
+        data-cookiepolicy="single_host_origin"
+        data-callback="googleSignInCallback">
+      </span>
+    </div>
+
+</div>
+  
+</div>
+
+
+<div class="panels">
+
+<script type="text/javascript">$(document).ready(function() {
+   $('.box button').button();
+});</script>
+
+<div class="box">
+  <h1>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+    Returning Participant
+  </h1>
+
+  <form method="POST" action="/auth/local/authorize" encoding="application/x-www-form-urlencoded">
+    <input name="token" type="hidden" value="fake-token">
+    <div>
+      <label>E-Mail Address:
+        <input name="email" type="text" size="30">
+      </label>
+    </div>
+    
+    <div>
+      <button type="submit">Sign In</button>
+    </div>
+   </form> 
+</div>
+
+<div class="box">
+  <h1>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+    New Participant
+  </h1>
+
+  <form method="POST" action="/auth/local/create" encoding="application/x-www-form-urlencoded">
+    <input name="token" type="hidden" value="fake-token">
+    <div>
+      <label>E-Mail Address:
+        <input name="email" type="text" size="30">
+      </label>
+    </div>
+    
+    <div>
+      <button type="submit">Create Account</button>
+    </div>
+ </form> 
+    
+</div>
+
+</div>
+
+
+</div>

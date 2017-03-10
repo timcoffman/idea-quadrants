@@ -1,0 +1,160 @@
+<script type="text/javascript">$(document).ready(function() {
+   $('.project .name.editable').editable('{{id}}', { submitdata: { field:'name' }, name: 'value' } );
+   $('.project .description.editable').editable('{{id}}', { type: 'textarea', onblur: 'submit', submitdata: { field:'description' }, name: 'value' } );
+});</script>
+
+<h1 class="project" title="Project Id: #{{project.id}}">
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+  <span class="field name editable">{{project.name}}</span>
+</h1>
+
+
+
+<div class="panels project"><div class="panels">
+
+<div class="panels">
+
+<div class="box">
+  <h2>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+  Details
+  </h2>
+  <div class="contents">
+    <div class="field description editable">{{project.description}}</div>
+  </div>
+</div>
+
+<div class="box">
+  <h2>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487636790_thermometer.png">
+  Feedback
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487583458_fast-forward.png">
+  </h2>
+   <div class="participants contents">
+    <a href="/project/{{project.id}}/feedback/">
+      Whole Project
+    </a>
+  </div>
+</div>
+
+<div class="box">
+  <h2>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487636790_thermometer.png">
+  Plots
+  </h2>
+  <div class="plots contents">
+  </div>
+</a>
+</div>
+
+</div>
+
+<div class="panels">
+  <div class="box">
+      <h2>
+    <a href="/project/{{project.id}}/subject/">
+        <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+        Subjects
+        <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487583458_fast-forward.png">
+    </a>
+      </h2>
+    <div class="subjects contents">
+    </div>
+  </div>
+
+  <div class="box">
+      <h2>
+    <a href="/project/{{project.id}}/rating/">
+      <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+      Ratings
+      <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487583458_fast-forward.png">
+    </a>
+      </h2>
+    <div class="ratings contents">
+    </div>
+  </div>
+
+  <div class="box">
+    <h2>
+      <a href="/project/{{project.id}}/participant/">
+      <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+      Participants
+      <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487583458_fast-forward.png">
+      </a>
+    </h2>
+    <div class="participants contents">
+    </div>
+  </div>
+
+</div>
+
+</div></div>
+
+<script id="feedback-participant-template" type="text/x-handlebars-template">
+  <div class="user" data-id="\{{id}}">
+    <a href="/project/{{project.id}}/participant/\{{id}}/feedback/">
+      <span class="name">\{{displayName}}</span>
+    </a>
+  </div>
+</script>
+
+<script id="plot-template" type="text/x-handlebars-template">
+  <div class="plot" data-rating-hz-id="\{{ratingHz.id}}" data-rating-vt-id="\{{ratingVt.id}}">
+    <a href="/project/{{project.id}}/plot/\{{ratingHz.id}}/\{{ratingVt.id}}">
+      <span class="name">\{{ratingHz.name}}</span> vs. <span class="name">\{{ratingVt.name}}</span>
+    </a>
+  </div>
+</script>
+
+<script id="rating-template" type="text/x-handlebars-template">
+  <div class="rating" data-id="\{{id}}"><span class="name">\{{name}}</span></div>
+</script>
+
+
+<script type="text/javascript">$(document).ready(function() {
+   $.getJSON('/project/{{project.id}}/subject/')
+     .done( function(data,status) {
+     
+       for ( var i in data ) {
+         $('.project .subjects').append( '<div class="subject" data-id=' + data[i].id + '><span class="name">' + data[i].name + '</span></div>' ) ;
+       }
+     
+     })
+   ;
+   
+   var plotTemplate = Handlebars.compile( $("#plot-template").html() ) ;
+   var ratingTemplate = Handlebars.compile( $("#rating-template").html() ) ;
+
+   $.getJSON('/project/{{project.id}}/rating/')
+     .done( function(data,status) {
+     
+       for ( var i in data ) {
+         $('.project .ratings').append( '<div class="rating" data-id=' + data[i].id + '><span class="name">' + data[i].name + '</span></div>' ) ;
+       }
+
+       for ( var i in data ) {
+         for ( var j in data ) {
+           if ( i == j ) continue ;
+           $( plotTemplate({ ratingHz: data[i], ratingVt: data[j] }) )
+             .appendTo( $('.project .plots') )
+            ;
+         }
+       }
+
+     })
+   ;
+   
+   var feedbackParticipantTemplate = Handlebars.compile( $("#feedback-participant-template").html() ) ;
+   
+   $.getJSON('/project/{{project.id}}/participant/')
+     .done( function(data,status) {
+     
+       for ( var i in data )
+         $( feedbackParticipantTemplate(data[i]) )
+           .appendTo( $( '.project .participants' ) )
+           ;
+     
+     })
+   ;
+
+});</script>

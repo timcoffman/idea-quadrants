@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <!-- icons from https://www.iconfinder.com/iconsets/feather -->
+<head>
+  <title>
+    Idea Quadrants
+    {{#if project}}
+      - {{project.name}}
+      {{#if plot}}
+      - {{plot.x.name}} vs. {{plot.y.name}}
+      {{/if}}
+    {{/if}}
+    {{#if subject}}
+      - {{subject.name}}
+    {{/if}}
+    {{#if rating}}
+      - {{rating.name}}
+    {{/if}}
+  </title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel="shortcut icon" href="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532185_grid2.png">
+  <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/cupertino/jquery-ui.css">
+  <link rel="stylesheet" type="text/css" href="/single.css"/>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.6/handlebars.min.js"></script>
+  <script type="text/javascript" src="https://www.appelsiini.net/download/jquery.jeditable.mini.js"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+  
+  <meta name="google-signin-client_id" content="{{clientId 'GOOGLE_PLUS'}}">
+  <script src="https://apis.google.com/js/platform.js" async defer></script>
+  
+  <script type="text/javascript" src="/single.js"></script>
+</head>
+<body>
+  <header>
+    <div class="login">
+      {{#if user}}
+        <a href="/user/{{user.id}}">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+          {{user.displayName}}
+        </a>
+      {{else}}
+        <a href="/auth/login">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+          Sign In
+        </a>
+      {{/if}}
+    </div>
+  
+    <div class="tabs category">
+      <a href="/">
+        <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532185_grid2.png">
+        Home
+      </a>
+      <a href="/project/">
+        <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+        Projects
+      </a>
+      <a href="/subject/">
+        <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+        Subjects
+      </a>
+      <a href="/rating/">
+        <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+        Ratings
+      </a>
+
+    </div>
+    {{#if project }}
+      <div class="tabs object">
+        <a href="/project/">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+          Projects
+        </a>
+        &#8227;
+        <a href="/project/{{project.id}}">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+          {{project.name}}
+        </a>
+        {{#if ratings}}
+          &#8227;
+          <a href="/project/{{project.id}}/ratings/">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+          Ratings
+          </a>
+        {{/if}}
+        {{#if subjects}}
+          &#8227;
+          <a href="/project/{{project.id}}/subjects/">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+          Subjects
+          </a>
+        {{/if}}
+        {{#if participant}}
+          &#8227;
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+          {{participant.displayName}}
+        {{/if}}
+        {{#if answers}}
+          &#8227;
+          <a href="/project/{{project.id}}/feedback">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487636790_thermometer.png">
+          Feedback
+          </a>
+        {{/if}}
+        {{#if plot}}
+          &#8227;
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487636790_thermometer.png">
+          {{plot.hz.name}} vs. {{plot.vt.name}}
+        {{/if}}
+      </div>
+    {{/if}}
+    {{#if subject}}
+      <div class="tabs object">
+        <a href="/subject/">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+          Subjects
+        </a>
+        &#8227;
+        <a href="/subject/{{subject.id}}">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+          {{subject.name}}
+        </a>
+      </div>
+    {{/if}}
+    {{#if rating}}
+      <div class="tabs object">
+        <a href="/rating/">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+          Ratings
+        </a>
+        &#8227;
+        <a href="/rating/{{rating.id}}">
+          <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532320_paper-clip.png">
+          {{rating.name}}
+        </a>
+      </div>
+    {{/if}}
+  </header>
+  
+  <div class="main">
+  {{{body}}}
+  </div>
+  
+</body>
+</html>

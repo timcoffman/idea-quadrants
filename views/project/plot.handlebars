@@ -1,0 +1,316 @@
+<script type="text/javascript">$(document).ready(function() {
+   $('.project .name.editable').editable('/project/{{id}}', { submitdata: { field:'name' }, name: 'value' } );
+});</script>
+
+<h1 class="project" title="Project Id: #{{project.id}}">
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+  <span class="field name editable">{{project.name}}</span>
+</h1>
+
+<script type="text/javascript">$(document).ready(function() {
+  $('button').button() ;
+  $('button.zoom-out').click( function(evt) {
+    $('header').show() ;
+    $('.zoom-out').hide() ;
+    $('.zoom-in').show() ;
+  }) ;
+  $('button.zoom-in').click( function(evt) {
+    $('header').hide() ;
+    $('.zoom-out').show() ;
+    $('.zoom-in').hide() ;
+  }) ;
+});</script>
+
+<div class="zoom-control">
+  <button class="zoom-in">
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487834034_bigger.png">
+  </button>
+  <button class="zoom-out" style="display: none;">
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487834047_smaller.png">
+  </button>
+</div>
+
+<h2>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487636790_thermometer.png">
+  {{plot.hz.name}} vs. {{plot.vt.name}}
+  &#8227;
+  {{#if participant}}
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487885566_head.png">
+    {{participant.displayName}}
+  {{else}}
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487532362_box.png">
+    Overall
+  {{/if}}
+</h2>
+
+<object id="plot" data="/plot.svg" type="image/svg+xml" height="600px"/>
+
+
+<script type="text/javascript">$(document).ready(function() {
+  var plot = {{{toJSON plot}}} ;
+
+  window.plotManager = new PlotManager( 'plot' )
+  plotManager.loadPlot( plot ) ;
+  
+});</script>
+
+<script type="text/javascript">
+
+PlotManager = function( elementId ) {
+
+  this.plotObject = document.getElementById( elementId ) ;
+  this.updatesSuspendedForKeys = {} ;
+  
+} ;
+
+
+PlotManager.prototype.fieldForKey = function fieldForKey( key ) {
+  var field = key.projectId + ':' + key.subjectId + ':' + key.ratingId ;
+  if ( key.participantId && key.participantId != '_')
+    field += ':' + key.participantId ;
+  return field ;
+}
+
+PlotManager.prototype.updatesSuspendedFor = function updatesSuspendedFor( key ) {
+  return this.updatesSuspendedForKeys[ this.fieldForKey(key) ] ;
+}
+
+PlotManager.prototype.suspendUpdatesFor = function suspendUpdatesFor( key ) {
+  this.updatesSuspendedForKeys[ this.fieldForKey(key) ] = 1 ;
+}
+
+PlotManager.prototype.resumeUpdatesFor = function resumeUpdatesFor( key ) {
+  this.updatesSuspendedForKeys[ this.fieldForKey(key) ] = 0 ;
+}
+
+PlotManager.prototype.loadPlot = function loadPlot( plot ) {
+
+  var self = this ;
+  if ( !this.plotSvg ) {
+    this.plotObject.addEventListener("load",function() {
+      self.plotSvg = d3.select(self.plotObject.contentDocument) ;
+      self.pointGroup = self.plotSvg.select('#point-group') ;
+      if ( self.plotSvg )
+        self.loadPlot( plot ) ;
+
+    });
+    return ;
+  }
+
+  this.plotSvg.data([plot])
+
+  this.plotSvg.select('#label-x-min' ).text ( function(p) { return p.hz.plotAxisDirection == 'highToLow' ? p.hz.maxLabel : p.hz.minLabel ; } ) ;
+  this.plotSvg.select('#label-x-main').text ( function(p) { return p.hz.name ; }  );
+  this.plotSvg.select('#label-x-max' ).text ( function(p) { return p.hz.plotAxisDirection == 'highToLow' ? p.hz.minLabel : p.hz.maxLabel ; } );
+  this.plotSvg.select('#label-y-min' ).text ( function(p) { return p.vt.plotAxisDirection == 'highToLow' ? p.vt.maxLabel : p.vt.minLabel ; }  );
+  this.plotSvg.select('#label-y-main').text ( function(p) { return p.vt.name ; }  );
+  this.plotSvg.select('#label-y-max' ).text ( function(p) { return p.vt.plotAxisDirection == 'highToLow' ? p.vt.minLabel : p.vt.maxLabel ; }  );
+  
+  this.loadPoints( plot.points ) ;
+}
+
+PlotManager.prototype.plot = function plot() {
+  return this.plotSvg.data()[0] ;
+}
+
+PlotManager.prototype.answerUrl = function answerUrl( plot, point, axis, commit ) {
+  var urlBase ;
+  if ( point.participantId && point.participantId != '_' )
+    urlBase = '/project/{{project.id}}/participant/' + point.participantId ;
+  else
+    urlBase = '/project/{{project.id}}' ;
+  var url = urlBase + '/answer/' + point.subject.id + '/' + plot[axis].id ;
+  if ( typeof commit != 'undefined' )
+    url += '?commit=' + commit ;
+  return url ;
+}
+
+PlotManager.prototype.loadPoints = function loadPoints( points ) {
+  var plot = this.plot() ;
+
+  var self = this ;
+  
+  function positionOnAxis( axis, point ) {
+    var v = plot[axis].plotAxisDirection == 'highToLow' ? 11-point[axis] : point[axis] ;
+    return Math.max( Math.min( Math.round(v*8)/8, 10 ), 1 ) ;
+  }
+
+  var pointGroups = this.pointGroup.selectAll("g").data(
+      points,
+      function(p) { return p.subject.id + ':' + p.participantId ; }
+    ) ;
+
+  pointGroups.exit().remove() ;
+  
+  var drag = d3.drag()
+    .on("start", function(p) {
+      d3.select(this).classed("active",true) ;
+      self.suspendUpdatesFor( { projectId: '{{project.id}}', subjectId: p.subject.id, ratingId: plot.hz.id, participantId: p.participantId } ) ;
+      self.suspendUpdatesFor( { projectId: '{{project.id}}', subjectId: p.subject.id, ratingId: plot.vt.id, participantId: p.participantId } ) ;
+    } )
+    .on("drag", function(p) {
+      var eventPosition = { hz: d3.event.x, vt: d3.event.y } ;
+      
+      var sendUncommittedUpdate ;
+      var now = new Date().getTime() ;
+      if ( !self.lastUncommittedUpdate || now - self.lastUncommittedUpdate > 100 ) {
+        sendUncommittedUpdate = true ;
+        self.lastUncommittedUpdate = now ;
+      } else {
+        sendUncommittedUpdate = false ;
+      }
+      
+      if ( !plot.lockHz ) {
+        p.hz = positionOnAxis('hz',eventPosition) ;
+        if ( sendUncommittedUpdate ) $.ajax( self.answerUrl(plot, p,'hz',false), { type: 'PUT', dataType: 'json', data: { value: p.hz } } )
+          .done( function(value,status) {
+            // nothing to do with response
+          })
+          ;
+      }
+      if ( !plot.lockVt ) {
+        p.vt = positionOnAxis('vt',eventPosition) ;
+        if ( sendUncommittedUpdate ) $.ajax( self.answerUrl(plot, p,'vt',false), { type: 'PUT', dataType: 'json', data: { value: p.vt } } )
+          .done( function(value,status) {
+            // nothing to do with response
+          })
+          ;
+      }
+      d3.select(this)
+        .attr("transform", function(p) { return "translate(" + positionOnAxis('hz',p) + "," + positionOnAxis('vt',p) + ")" ; })
+        ;
+    } )
+    .on("end", function(p) {
+      d3.select(this).classed("active",false) ;
+      if ( !plot.lockHz ) {
+        $.ajax( self.answerUrl(plot,p,'hz'), { type: 'PUT', dataType: 'json', data: { value: p.hz } } )
+          .done( function(value,status) {
+            // nothing to do with response
+          })
+          ;
+      }
+      if ( !plot.lockVt ) {
+        $.ajax( self.answerUrl(plot,p,'vt'), { type: 'PUT', dataType: 'json', data: { value: p.vt } } )
+          .done( function(value,status) {
+            // nothing to do with response
+          })
+          ;
+      }
+      self.resumeUpdatesFor( { projectId: '{{project.id}}', subjectId: p.subject.id, ratingId: plot.hz.id, participantId: p.participantId } ) ;
+      self.resumeUpdatesFor( { projectId: '{{project.id}}', subjectId: p.subject.id, ratingId: plot.vt.id, participantId: p.participantId } ) ;
+    } )
+    ;
+
+  var g = pointGroups.enter()
+    .append("g")
+    {{#if participant}}
+    .each( function (p) {
+      if( p.participantId == '{{participant.id}}' )
+        d3.select(this).call( drag ) ;
+    })
+    {{else}}
+    .each( function (p) {
+      if( !p.participantId || p.participantId == '_' )
+        d3.select(this).call( drag ) ;
+    })
+    {{/if}}
+    .attr("transform", function(p) {
+      return "translate(" + positionOnAxis('hz',p) + "," + positionOnAxis('vt',p) + ")" ;
+      })
+    .merge(pointGroups) ;
+  
+  g
+    .transition()
+    .duration(100)
+    .attr("transform", function(p) {
+      return "translate(" + positionOnAxis('hz',p) + "," + positionOnAxis('vt',p) + ")" ;
+      })
+    ;
+
+  g.append("title")
+    .text( function(p) { return p.label ; } )
+    ;
+  g.append("circle")
+      .attr("cx", "0" )
+      .attr("cy", "0" )
+      .attr("r", "0.35" )
+      {{#if participant}}
+      .attr("fill", function(p) { return p.participantId == '{{participant.id}}' ? "black" : "rgba(0,0,0,0.3)" ; } )
+      .attr("style",function(p) { return p.participantId == '{{participant.id}}' ? "cursor: pointer" : "" ; })
+      {{else}}
+      .attr("fill", function(p) { return !p.participantId || p.participantId == '_' ? "black" : "rgba(0,0,0,0.3)" ; } )
+      .attr("style", function(p) { return !p.participantId || p.participantId == '_' ? "cursor: pointer" : "" ; } )
+      {{/if}}
+      .attr("stroke", function(p) { return p.uncommitted ? "blue" : "white" ; } )
+      .attr("stroke-width", function(p) { return p.uncommitted ? "0.05" : "0.02" ; } )
+      ;
+  var textGroup = g.append("g")
+    .attr("transform", "translate(0,-0.20)" )
+    ;
+  textGroup.append("text")
+    .text( function(p) { return p.label ; } )
+    .attr("stroke", "black").attr("stroke-width","0.5")
+    .attr("fill", "white")
+    .attr("transform", "scale(0.03,-0.03)")
+    .attr("text-anchor", "middle")
+    .attr("font-size", "18")
+    .attr("style","cursor: pointer;")
+    ;
+
+}
+   
+</script>
+
+<script type="text/javascript">$(document).ready(function() {
+   var cxn = new WebSocket('wss://' + location.hostname + location.pathname ) ;
+   cxn.onopen = function () {
+     /* socket open */ ;
+   } ;
+   cxn.onerror = function (err) {
+     console.log("websocket error: " + error) ;
+   } ;
+   cxn.onmessage = function (evt) {
+     var message = JSON.parse( evt.data );
+
+     if ( message.type == 'update' ) {
+       var projectId     = message.key.projectId ;
+       var subjectId     = message.key.subjectId ;
+       var ratingId      = message.key.ratingId ;
+       var participantId = message.key.participantId ;
+       if ( !( projectId && subjectId && ratingId ) )
+         return ;
+       if ( projectId != '{{project.id}}' )
+         return ;
+       if ( window.plotManager.updatesSuspendedFor( message.key ) )
+         return ;
+        
+        var plot = window.plotManager.plot() ;
+        
+        var axis ;
+        if ( ratingId == plot.hz.id )
+          axis = 'hz' ;
+        else if ( ratingId == plot.vt.id )
+          axis = 'vt' ;
+        else
+          return ;
+
+        console.log( "updating: " + JSON.stringify(message) ) ;
+
+        var points = window.plotManager.plot().points ;
+        for ( var i in points ) {
+          var p = points[i] ;
+          if ( p.subject.id != subjectId ) continue ;
+          if ( participantId && participantId != '_' ) {
+            if ( p.participantId != participantId ) continue ;
+          } else {
+            if ( p.participantId && p.participantId != '_' ) continue ;
+          }
+          p[axis] = message.value ;
+          p.uncommitted = !message.committed ;
+          console.log( "updated: " + JSON.stringify(p) ) ;
+        }
+        window.plotManager.loadPoints(points) ;
+        
+     }
+   } ;
+});</script>

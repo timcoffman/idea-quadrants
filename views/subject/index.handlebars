@@ -1,0 +1,42 @@
+<h1>
+  <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+  Subjects
+</h1>
+
+
+<div class="panels">
+
+
+<div class="panels">
+
+
+{{#each subjects }}
+<a href="/subject/{{id}}">
+  <div class="box">
+    <h2>
+      <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+      {{name}}
+    </h2>
+    <div>{{description}}
+    </div>
+  </div>
+</a>
+{{/each}}
+
+</div>
+<div class="panels">
+
+<div class="box">
+  <h1>
+    <img src="https://cdn.gomix.com/14f6beef-5945-4d61-951e-f3637bdfa755%2F1487547281_speech-bubble.png">
+    New Subject
+  </h1>
+  <form method="POST" action="/subject/?_method=PUT">
+    <button type="submit">Submit New Subject</button>
+  </form>
+</div>
+
+</div>
+
+</div>
+
